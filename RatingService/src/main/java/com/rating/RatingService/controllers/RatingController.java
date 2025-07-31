@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/ratings")
+@RequestMapping("/ratings")
 public class RatingController {
     @Autowired
     private RatingService ratingService;
