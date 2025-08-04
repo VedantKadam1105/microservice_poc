@@ -1,12 +1,17 @@
 package com.userservice.UserService.services.impl;
 
+import com.userservice.UserService.entities.Rating;
 import com.userservice.UserService.entities.User;
 import com.userservice.UserService.exceptions.ResourceNotFoundException;
 import com.userservice.UserService.repositories.UserRepository;
 import com.userservice.UserService.services.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,6 +19,10 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private RestTemplate restTemplate;
+
+    private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Override
     public User saveUser(User user) {
@@ -30,7 +39,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(String userId) {
-        return userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User with id is not found on server"));
+        User user= userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User with id is not found on server"));
+       ArrayList<Rating> forObject= restTemplate.getForObject("http://localhost:8083/ratings/user/"+userId, ArrayList.class);
+       logger.info("{}",forObject);
+       user.setRatings(forObject);
+        return user;
     }
 
     @Override
