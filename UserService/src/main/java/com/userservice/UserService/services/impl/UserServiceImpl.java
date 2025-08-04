@@ -34,7 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllUser() {
-        return userRepository.findAll();
+        List<User> userList= userRepository.findAll();
+        userList.stream().forEach((user)->user.setRatings(restTemplate.getForObject("http://localhost:8083/ratings/user/"+user.getUserId(), ArrayList.class)));
+        return  userList;
     }
 
     @Override
